@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>USS Bellavista · Evaluación de Baños</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root{
+      --uss-blue:#0b2d4f;
+      --uss-blue-2:#123f6d;
+      --uss-gold:#d5bd86;
+      --uss-gold-2:#e7d7a7;
+      --uss-white:#ffffff;
+      --uss-bg:#eef3f8;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --border:#d9e2ec;
+      --success:#1a9c4b;
+      --danger:#d43f3a;
+      --shadow:0 20px 45px rgba(0,0,0,.18);
+      --radius:24px;
+    }
+
+    *{
+      box-sizing:border-box;
+    }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:Arial, Helvetica, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(213,189,134,.25), transparent 25%),
+        radial-gradient(circle at bottom right, rgba(11,45,79,.12), transparent 25%),
+        linear-gradient(135deg, #f7fafc, #eef3f8 45%, #ffffff 100%);
+      animation:fadeBody .8s ease;
+    }
+
+    nav{
+      background:linear-gradient(90deg, var(--uss-blue), var(--uss-blue-2));
+      color:white;
+      padding:18px 24px;
+      box-shadow:0 6px 18px rgba(0,0,0,.14);
+      animation:slideTop .6s ease;
+    }
+
+    nav h2{
+      margin:0;
+      font-size:24px;
+      letter-spacing:.2px;
+      text-align:center;
+    }
+
+    .page{
+      min-height:calc(100vh - 72px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:28px 16px;
+    }
+
+    .totem{
+      width:100%;
+      max-width:620px;
+      background:linear-gradient(180deg, #1a1a1a, #0e0e0e);
+      border-radius:34px;
+      padding:18px;
+      box-shadow:
+        0 25px 60px rgba(0,0,0,.28),
+        inset 0 0 0 2px rgba(255,255,255,.04);
+      position:relative;
+      animation:totemIn .6s ease;
+    }
+
+    .totem::before{
+      content:"";
+      position:absolute;
+      top:10px;
+      left:50%;
+      transform:translateX(-50%);
+      width:90px;
+      height:10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.08);
+    }
+
+    .totem-screen{
+      background:rgba(255,255,255,.96);
+      border-radius:28px;
+      padding:28px;
+      min-height:740px;
+      box-shadow:inset 0 0 0 1px rgba(11,45,79,.06);
+      overflow:hidden;
+      position:relative;
+    }
+
+    .hidden{
+      display:none !important;
+    }
+
+    .logo-wrap{
+      display:flex;
+      justify-content:center;
+      margin-bottom:14px;
+      animation:fadeUp .5s ease;
+    }
+
+    .logo{
+      width:120px;
+      height:120px;
+      object-fit:cover;
+      border-radius:50%;
+      border:6px solid var(--uss-gold);
+      box-shadow:0 8px 24px rgba(11,45,79,.18);
+      background:#fff;
+    }
+
+    .title{
+      margin:0;
+      font-size:31px;
+      color:var(--uss-blue);
+      text-align:center;
+      line-height:1.2;
+    }
+
+    .subtitle{
+      margin:10px 0 24px;
+      color:var(--muted);
+      text-align:center;
+      line-height:1.55;
+      font-size:15px;
+    }
+
+    .field{
+      margin-bottom:16px;
+      animation:fadeUp .45s ease;
+    }
+
+    .field label{
+      display:block;
+      font-weight:bold;
+      margin-bottom:8px;
+      color:var(--uss-blue);
+    }
+
+    .field select,
+    .field input{
+      width:100%;
+      padding:14px 15px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:#fff;
+      font-size:15px;
+      transition:border-color .25s ease, box-shadow .25s ease, transform .2s ease;
+    }
+
+    .field select:focus,
+    .field input:focus{
+      outline:none;
+      border-color:var(--uss-blue);
+      box-shadow:0 0 0 4px rgba(11,45,79,.12);
+      transform:translateY(-1px);
+    }
+
+    .pill{
+      display:inline-block;
+      padding:7px 14px;
+      border-radius:999px;
+      background:linear-gradient(90deg, var(--uss-gold), var(--uss-gold-2));
+      color:var(--uss-blue);
+      font-weight:bold;
+      font-size:13px;
+      margin:0 auto 14px;
+    }
+
+    .center{
+      text-align:center;
+    }
+
+    .progress-wrap{
+      margin-bottom:18px;
+      animation:fadeUp .45s ease;
+    }
+
+    .progress-top{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+      margin-bottom:10px;
+      font-size:14px;
+      color:var(--muted);
+    }
+
+    .progress{
+      height:12px;
+      background:#e5e7eb;
+      border-radius:999px;
+      overflow:hidden;
+      box-shadow:inset 0 2px 5px rgba(0,0,0,.05);
+    }
+
+    .bar{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg, var(--uss-blue), #1a5d9a, var(--uss-gold));
+      border-radius:999px;
+      transition:width .45s ease;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .bar::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(120deg, transparent 20%, rgba(255,255,255,.4) 50%, transparent 80%);
+      animation:shine 1.9s linear infinite;
+    }
+
+    .question-box{
+      text-align:center;
+      animation:questionIn .35s ease;
+      padding:8px 0 0;
+    }
+
+    .question-box h3{
+      margin:0 0 10px;
+      color:var(--uss-blue);
+      font-size:30px;
+      min-height:92px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      line-height:1.25;
+    }
+
+    .hint{
+      color:var(--muted);
+      font-size:14px;
+      margin-bottom:14px;
+    }
+
+    .emoji-group{
+      display:flex;
+      justify-content:center;
+      flex-wrap:wrap;
+      gap:14px;
+      margin:22px 0 10px;
+    }
+
+    .emoji{
+      width:82px;
+      height:82px;
+      border:none;
+      border-radius:22px;
+      background:linear-gradient(180deg, #f8f8f9, #eceff2);
+      font-size:38px;
+      cursor:pointer;
+      transition:transform .18s ease, box-shadow .18s ease, background .22s ease;
+      box-shadow:0 6px 14px rgba(0,0,0,.08);
+      animation:emojiIn .35s ease;
+    }
+
+    .emoji:hover{
+      transform:translateY(-4px) scale(1.08);
+      box-shadow:0 12px 24px rgba(0,0,0,.14);
+      background:linear-gradient(180deg, #fff6d8, #f7e7b2);
+    }
+
+    .emoji.selected{
+      transform:scale(1.12);
+      background:linear-gradient(180deg, #dbeeff, #bddcff);
+      box-shadow:0 0 0 4px rgba(11,45,79,.14), 0 14px 28px rgba(0,0,0,.15);
+      animation:emojiSelect .28s ease;
+    }
+
+    .likert{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:8px;
+      font-size:12px;
+      color:var(--muted);
+      text-align:center;
+      margin-top:8px;
+    }
+
+    .actions{
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:26px;
+    }
+
+    button{
+      border:none;
+      border-radius:14px;
+      padding:13px 19px;
+      cursor:pointer;
+      font-size:15px;
+      font-weight:bold;
+      transition:transform .2s ease, box-shadow .2s ease, background .25s ease, opacity .2s ease;
+    }
+
+    button:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 20px rgba(0,0,0,.13);
+    }
+
+    button:active{
+      transform:scale(.97);
+    }
+
+    .btn-primary{
+      background:linear-gradient(90deg, var(--uss-blue), var(--uss-blue-2));
+      color:white;
+    }
+
+    .btn-secondary{
+      background:#edf1f6;
+      color:var(--text);
+    }
+
+    .btn-secondary:hover{
+      background:#e2e8f0;
+    }
+
+    .btn-success{
+      background:linear-gradient(90deg, #178c43, var(--success));
+      color:white;
+    }
+
+    .admin-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));
+      gap:14px;
+      margin-bottom:8px;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));
+      gap:14px;
+      margin:22px 0 24px;
+    }
+
+    .stat{
+      background:linear-gradient(180deg, #f9fbff, #f1f6fb);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:16px;
+      animation:fadeUp .45s ease;
+    }
+
+    .stat h4{
+      margin:0 0 8px;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .stat p{
+      margin:0;
+      color:var(--uss-blue);
+      font-size:28px;
+      font-weight:bold;
+    }
+
+    .table-wrap{
+      overflow:auto;
+      margin-top:18px;
+      border-radius:16px;
+      border:1px solid #e5e7eb;
+      animation:fadeUp .45s ease;
+      background:white;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:720px;
+      background:white;
+    }
+
+    th, td{
+      border-bottom:1px solid #eceff3;
+      padding:11px 10px;
+      text-align:center;
+      font-size:14px;
+    }
+
+    th{
+      background:#f5f8fb;
+      color:#374151;
+      position:sticky;
+      top:0;
+    }
+
+    tr:hover td{
+      background:#fafcff;
+    }
+
+    .thanks-box{
+      text-align:center;
+      padding:18px 8px;
+      animation:thanksIn .5s ease;
+    }
+
+    .thanks-icon{
+      font-size:58px;
+      animation:bounceSoft 1.3s infinite;
+    }
+
+    .thanks-box h2{
+      color:var(--uss-blue);
+      margin:12px 0 10px;
+      font-size:33px;
+    }
+
+    .thanks-box p{
+      color:var(--muted);
+      margin:0 0 18px;
+      line-height:1.6;
+    }
+
+    .badge{
+      display:inline-block;
+      padding:8px 14px;
+      border-radius:999px;
+      background:#ebf8ef;
+      color:#15803d;
+      font-weight:bold;
+      font-size:13px;
+      margin-bottom:10px;
+    }
+
+    .footer-totem{
+      text-align:center;
+      color:var(--muted);
+      font-size:12px;
+      margin-top:20px;
+    }
+
+    @keyframes fadeBody{
+      from{opacity:0}
+      to{opacity:1}
+    }
+
+    @keyframes slideTop{
+      from{opacity:0; transform:translateY(-24px)}
+      to{opacity:1; transform:translateY(0)}
+    }
+
+    @keyframes totemIn{
+      from{opacity:0; transform:translateY(24px) scale(.97)}
+      to{opacity:1; transform:translateY(0) scale(1)}
+    }
+
+    @keyframes fadeUp{
+      from{opacity:0; transform:translateY(14px)}
+      to{opacity:1; transform:translateY(0)}
+    }
+
+    @keyframes emojiIn{
+      from{opacity:0; transform:scale(.65)}
+      to{opacity:1; transform:scale(1)}
+    }
+
+    @keyframes emojiSelect{
+      0%{transform:scale(.95)}
+      50%{transform:scale(1.18)}
+      100%{transform:scale(1.12)}
+    }
+
+    @keyframes questionIn{
+      from{opacity:0; transform:translateX(12px)}
+      to{opacity:1; transform:translateX(0)}
+    }
+
+    @keyframes thanksIn{
+      from{opacity:0; transform:scale(.95)}
+      to{opacity:1; transform:scale(1)}
+    }
+
+    @keyframes bounceSoft{
+      0%,100%{transform:translateY(0)}
+      50%{transform:translateY(-6px)}
+    }
+
+    @keyframes shine{
+      from{transform:translateX(-120%)}
+      to{transform:translateX(120%)}
+    }
+
+    @media (max-width:700px){
+      .totem-screen{
+        min-height:auto;
+        padding:22px;
+      }
+
+      .title{
+        font-size:27px;
+      }
+
+      .question-box h3{
+        font-size:24px;
+        min-height:78px;
+      }
+
+      .emoji{
+        width:70px;
+        height:70px;
+        font-size:33px;
+      }
+
+      .logo{
+        width:98px;
+        height:98px;
+      }
+
+      .likert{
+        font-size:11px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <h2>USS Bellavista · Evaluación de Baños</h2>
+  </nav>
+
+  <div class="page">
+    <div class="totem">
+      <div class="totem-screen">
+
+        <!-- ESTUDIANTE -->
+        <section id="student">
+          <div id="setup">
+            <div class="logo-wrap">
+              <img src="image.png" alt="Logo universidad" class="logo">
+            </div>
+
+            <div class="center">
+              <div class="pill">Tótem de satisfacción</div>
+            </div>
+
+            <h1 class="title">Encuesta de Satisfacción</h1>
+            <p class="subtitle">
+              Evalúa tu experiencia en los baños de la sede Bellavista.
+              Primero selecciona los datos del baño y luego responde la encuesta.
+            </p>
+
+            <div class="field">
+              <label for="edificio">Edificio</label>
+              <select id="edificio">
+                <option value="">Seleccionar edificio</option>
+                <option value="A">Edificio A</option>
+                <option value="B">Edificio B</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="piso">Piso</label>
+              <select id="piso">
+                <option value="">Seleccionar piso</option>
+                <option value="1">Piso 1</option>
+                <option value="2">Piso 2</option>
+                <option value="3">Piso 3</option>
+                <option value="4">Piso 4</option>
+                <option value="5">Piso 5</option>
+                <option value="6">Piso 6</option>
+                <option value="7">Piso 7</option>
+                <option value="8">Piso 8</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="tipo">Tipo de baño</label>
+              <select id="tipo">
+                <option value="">Seleccionar tipo</option>
+                <option value="Hombre">Hombre</option>
+                <option value="Mujer">Mujer</option>
+              </select>
+            </div>
+
+            <div class="actions">
+              <button class="btn-primary" onclick="survey.start()">Comenzar encuesta</button>
+            </div>
+          </div>
+
+          <div id="encuesta" class="hidden">
+            <div class="logo-wrap">
+              <img src="image.png" alt="Logo universidad" class="logo">
+            </div>
+
+            <div class="progress-wrap">
+              <div class="progress-top">
+                <span id="contador">Pregunta 1 de 5</span>
+                <span id="porcentaje">20%</span>
+              </div>
+              <div class="progress">
+                <div class="bar" id="bar"></div>
+              </div>
+            </div>
+
+            <div class="question-box" id="question-box">
+              <h3 id="pregunta"></h3>
+              <div class="hint">Selecciona el emoji que mejor represente tu experiencia</div>
+
+              <div class="emoji-group" id="emojis"></div>
+
+              <div class="likert">
+                <div>Muy malo</div>
+                <div>Malo</div>
+                <div>Regular</div>
+                <div>Bueno</div>
+                <div>Excelente</div>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="btn-secondary" onclick="survey.prev()">Anterior</button>
+              <button class="btn-primary" onclick="survey.next()">Siguiente</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- LOGIN ADMIN -->
+        <section id="login" class="hidden">
+          <div class="logo-wrap">
+            <img src="image.png" alt="Logo universidad" class="logo">
+          </div>
+
+          <h1 class="title">Acceso Admin</h1>
+          <p class="subtitle">Ingresa tus credenciales para ver los reportes.</p>
+
+          <div class="field">
+            <label for="user">Usuario</label>
+            <input id="user" type="text" placeholder="Usuario">
+          </div>
+
+          <div class="field">
+            <label for="pass">Contraseña</label>
+            <input id="pass" type="password" placeholder="Contraseña">
+          </div>
+
+          <div class="actions">
+            <button class="btn-primary" onclick="login()">Ingresar</button>
+            <button class="btn-secondary" onclick="volverEncuesta()">Volver a la encuesta</button>
+          </div>
+        </section>
+
+        <!-- ADMIN -->
+        <section id="admin" class="hidden">
+          <div class="logo-wrap">
+            <img src="image.png" alt="Logo universidad" class="logo">
+          </div>
+
+          <h1 class="title">Dashboard de Reportes</h1>
+          <p class="subtitle">Resumen de respuestas registradas en los baños.</p>
+
+          <div class="admin-grid">
+            <div class="field">
+              <label for="fEdificio">Filtrar por edificio</label>
+              <select id="fEdificio">
+                <option value="Todos">Todos</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="fPiso">Filtrar por piso</label>
+              <select id="fPiso">
+                <option value="Todos">Todos</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="fTipo">Filtrar por tipo</label>
+              <select id="fTipo">
+                <option value="Todos">Todos</option>
+                <option value="Hombre">Hombre</option>
+                <option value="Mujer">Mujer</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn-primary" onclick="aplicarFiltros()">Aplicar filtros</button>
+            <button class="btn-secondary" onclick="resetFiltros()">Limpiar filtros</button>
+            <button class="btn-success" onclick="download()">Descargar CSV</button>
+            <button class="btn-secondary" onclick="window.print()">Imprimir</button>
+            <button class="btn-secondary" onclick="logout()">Salir</button>
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <h4>Total respuestas</h4>
+              <p id="statTotal">0</p>
+            </div>
+            <div class="stat">
+              <h4>Promedio general</h4>
+              <p id="statPromedio">0.0</p>
+            </div>
+            <div class="stat">
+              <h4>Filtro activo</h4>
+              <p id="statFiltro">Todos</p>
+            </div>
+          </div>
+
+          <canvas id="chart"></canvas>
+
+          <div class="table-wrap">
+            <table id="tabla">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Edificio</th>
+                  <th>Piso</th>
+                  <th>Tipo</th>
+                  <th>P1</th>
+                  <th>P2</th>
+                  <th>P3</th>
+                  <th>P4</th>
+                  <th>P5</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+<div class="footer-totem">
+  Universidad San Sebastián · Sede Bellavista  
+  <br>
+  Creado por Joaquin Gonzalez
+</div>      </div>
+    </div>
+  </div>
+
+  <script>
+    const preguntas = [
+      "¿Cómo calificarías el estado general del baño?",
+      "¿Había disponibilidad de insumos como papel y jabón?",
+      "¿Cómo evaluarías el olor del baño?",
+      "¿El funcionamiento de sanitarios y lavamanos fue correcto?",
+      "¿Cómo calificarías la iluminación del baño?"
+    ];
+
+    const emojis = ["😡", "😕", "😐", "🙂", "😍"];
+
+    let respuestas = [];
+    let actual = 0;
+    let edificio = "";
+    let piso = "";
+    let tipo = "";
+    let chartInstance = null;
+
+    const survey = {
+      start() {
+        edificio = document.getElementById("edificio").value;
+        piso = document.getElementById("piso").value;
+        tipo = document.getElementById("tipo").value;
+
+        if (!edificio || !piso || !tipo) {
+          alert("Debes completar edificio, piso y tipo de baño.");
+          return;
+        }
+
+        respuestas = [];
+        actual = 0;
+
+        document.getElementById("setup").classList.add("hidden");
+        document.getElementById("encuesta").classList.remove("hidden");
+
+        render();
+      },
+
+      next() {
+        if (respuestas[actual] == null) {
+          alert("Selecciona un emoji antes de continuar.");
+          return;
+        }
+
+        actual++;
+
+        if (actual >= preguntas.length) {
+          finish();
+          return;
+        }
+
+        render();
+      },
+
+      prev() {
+        if (actual > 0) {
+          actual--;
+          render();
+        }
+      }
+    };
+
+    function render() {
+      const progressPercent = Math.round(((actual + 1) / preguntas.length) * 100);
+
+      document.getElementById("contador").innerText = `Pregunta ${actual + 1} de ${preguntas.length}`;
+      document.getElementById("porcentaje").innerText = `${progressPercent}%`;
+      document.getElementById("pregunta").innerText = preguntas[actual];
+      document.getElementById("bar").style.width = progressPercent + "%";
+
+      const box = document.getElementById("question-box");
+      box.style.animation = "none";
+      void box.offsetWidth;
+      box.style.animation = "questionIn .35s ease";
+
+      const cont = document.getElementById("emojis");
+      cont.innerHTML = "";
+
+      emojis.forEach((emoji, i) => {
+        const b = document.createElement("button");
+        b.className = "emoji";
+        b.innerText = emoji;
+
+        if (respuestas[actual] === i + 1) {
+          b.classList.add("selected");
+        }
+
+        b.onclick = () => {
+          respuestas[actual] = i + 1;
+
+          document.querySelectorAll(".emoji").forEach(btn => btn.classList.remove("selected"));
+          b.classList.add("selected");
+
+          b.animate(
+            [
+              { transform: "scale(1)" },
+              { transform: "scale(1.22)" },
+              { transform: "scale(1.12)" }
+            ],
+            {
+              duration: 220,
+              easing: "ease-out"
+            }
+          );
+        };
+
+        cont.appendChild(b);
+      });
+    }
+
+    function finish() {
+      const data = JSON.parse(localStorage.getItem("datos") || "[]");
+
+      data.push({
+        fecha: new Date().toLocaleString(),
+        edificio,
+        piso,
+        tipo,
+        respuestas: [...respuestas]
+      });
+
+      localStorage.setItem("datos", JSON.stringify(data));
+
+      document.getElementById("student").innerHTML = `
+        <div class="thanks-box">
+          <div class="logo-wrap">
+            <img src="image.png" alt="Logo universidad" class="logo">
+          </div>
+          <div class="thanks-icon">✅</div>
+          <span class="badge">Respuesta guardada correctamente</span>
+          <h2>¡Gracias por responder!</h2>
+          <p>
+            Tu opinión ayuda a mejorar la experiencia en los baños de la sede Bellavista.
+          </p>
+          <div class="actions">
+            <button class="btn-primary" onclick="otraEncuesta()">Otra encuesta</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function otraEncuesta() {
+      location.reload();
+    }
+
+    function login() {
+      const u = document.getElementById("user").value.trim();
+      const p = document.getElementById("pass").value.trim();
+
+      if (u === "Juako" && p === "0406") {
+        document.getElementById("student").classList.add("hidden");
+        document.getElementById("login").classList.add("hidden");
+        document.getElementById("admin").classList.remove("hidden");
+        loadAdmin();
+      } else {
+        alert("Usuario o contraseña incorrectos.");
+      }
+    }
+
+    function volverEncuesta() {
+      document.getElementById("login").classList.add("hidden");
+      document.getElementById("student").classList.remove("hidden");
+    }
+
+    function logout() {
+      location.reload();
+    }
+
+    function getDataFiltrada() {
+      const data = JSON.parse(localStorage.getItem("datos") || "[]");
+
+      const fEdificio = document.getElementById("fEdificio").value;
+      const fPiso = document.getElementById("fPiso").value;
+      const fTipo = document.getElementById("fTipo").value;
+
+      return data.filter(item => {
+        const okEdificio = fEdificio === "Todos" || item.edificio === fEdificio;
+        const okPiso = fPiso === "Todos" || item.piso === fPiso;
+        const okTipo = fTipo === "Todos" || item.tipo === fTipo;
+        return okEdificio && okPiso && okTipo;
+      });
+    }
+
+    function getPromedios(data) {
+      const promedios = [0, 0, 0, 0, 0];
+
+      if (!data.length) return promedios;
+
+      data.forEach(item => {
+        item.respuestas.forEach((valor, i) => {
+          promedios[i] += valor;
+        });
+      });
+
+      return promedios.map(valor => Number((valor / data.length).toFixed(1)));
+    }
+
+    function loadAdmin() {
+      aplicarFiltros();
+    }
+
+    function aplicarFiltros() {
+      const data = getDataFiltrada();
+      const promedios = getPromedios(data);
+
+      document.getElementById("statTotal").innerText = data.length;
+
+      const promedioGeneral = data.length
+        ? (promedios.reduce((a, b) => a + b, 0) / promedios.length).toFixed(1)
+        : "0.0";
+
+      document.getElementById("statPromedio").innerText = promedioGeneral;
+
+      const fEdificio = document.getElementById("fEdificio").value;
+      const fPiso = document.getElementById("fPiso").value;
+      const fTipo = document.getElementById("fTipo").value;
+      document.getElementById("statFiltro").innerText = `${fEdificio} / ${fPiso} / ${fTipo}`;
+
+      renderTabla(data);
+      renderChart(promedios);
+    }
+
+    function resetFiltros() {
+      document.getElementById("fEdificio").value = "Todos";
+      document.getElementById("fPiso").value = "Todos";
+      document.getElementById("fTipo").value = "Todos";
+      aplicarFiltros();
+    }
+
+    function renderTabla(data) {
+      const tbody = document.querySelector("#tabla tbody");
+      tbody.innerHTML = "";
+
+      if (!data.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="9">No hay respuestas para este filtro.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      data.forEach(item => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${item.fecha}</td>
+          <td>${item.edificio}</td>
+          <td>${item.piso}</td>
+          <td>${item.tipo}</td>
+          <td>${item.respuestas[0]}</td>
+          <td>${item.respuestas[1]}</td>
+          <td>${item.respuestas[2]}</td>
+          <td>${item.respuestas[3]}</td>
+          <td>${item.respuestas[4]}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function renderChart(promedios) {
+      const ctx = document.getElementById("chart");
+
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      chartInstance = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: ["Estado", "Insumos", "Olor", "Funcionamiento", "Iluminación"],
+          datasets: [{
+            label: "Promedio Likert (1-5)",
+            data: promedios,
+            backgroundColor: [
+              "rgba(11,45,79,0.85)",
+              "rgba(18,63,109,0.85)",
+              "rgba(213,189,134,0.9)",
+              "rgba(31,85,134,0.85)",
+              "rgba(160,136,73,0.9)"
+            ],
+            borderRadius: 10
+          }]
+        },
+        options: {
+          responsive: true,
+          animation: {
+            duration: 900
+          },
+          plugins: {
+            legend: {
+              display: true
+            }
+          },
+          scales: {
+            y: {
+              min: 0,
+              max: 5,
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    function download() {
+      const data = getDataFiltrada();
+
+      if (!data.length) {
+        alert("No hay datos para descargar.");
+        return;
+      }
+
+      let csv = "Fecha,Edificio,Piso,Tipo,P1,P2,P3,P4,P5\n";
+
+      data.forEach(item => {
+        csv += `"${item.fecha}",${item.edificio},${item.piso},${item.tipo},${item.respuestas.join(",")}\n`;
+      });
+
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "reporte_banos_uss.csv";
+      link.click();
+    }
+
+    document.addEventListener("keydown", function(e) {
+      if (e.ctrlKey && e.key.toLowerCase() === "j") {
+        document.getElementById("student").classList.add("hidden");
+        document.getElementById("admin").classList.add("hidden");
+        document.getElementById("login").classList.remove("hidden");
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+body{
+font-family:Arial;
+margin:0;
+background:linear-gradient(135deg,#eef4fb,#ffffff);
+animation:fadeBody 0.8s ease;
+}
+
+nav{
+background:#003865;
+color:white;
+padding:15px;
+animation:slideTop 0.6s ease;
+}
+
+.container{
+max-width:700px;
+margin:30px auto;
+}
+
+.card{
+background:white;
+padding:25px;
+border-radius:15px;
+box-shadow:0 10px 25px rgba(0,0,0,0.15);
+animation:cardIn 0.5s ease;
+transition:0.3s;
+}
+
+.card:hover{
+transform:translateY(-3px);
+}
+
+.hidden{
+display:none;
+}
+
+.progress{
+height:8px;
+background:#ddd;
+border-radius:10px;
+margin-bottom:20px;
+overflow:hidden;
+}
+
+.bar{
+height:8px;
+background:linear-gradient(90deg,#003865,#0055a5);
+width:0%;
+transition:0.4s ease;
+}
+
+.emoji{
+font-size:35px;
+margin:10px;
+cursor:pointer;
+background:none;
+border:none;
+transition:0.25s;
+animation:popIn 0.4s ease;
+}
+
+.emoji:hover{
+transform:scale(1.25) rotate(5deg);
+}
+
+.selected{
+transform:scale(1.35);
+animation:pulse 0.4s;
+}
+
+button{
+padding:10px 20px;
+border:none;
+background:#003865;
+color:white;
+border-radius:8px;
+cursor:pointer;
+margin-top:10px;
+transition:0.3s;
+}
+
+button:hover{
+background:#0055a5;
+transform:translateY(-2px);
+box-shadow:0 5px 15px rgba(0,0,0,0.2);
+}
+
+button:active{
+transform:scale(0.95);
+}
+
+.btn-volver{
+background:#999;
+}
+
+select,input{
+width:100%;
+padding:10px;
+margin:10px 0;
+border-radius:8px;
+border:1px solid #ccc;
+transition:0.3s;
+}
+
+select:focus,input:focus{
+outline:none;
+border-color:#003865;
+box-shadow:0 0 8px rgba(0,56,101,0.3);
+}
+
+/* Animaciones */
+
+@keyframes fadeBody{
+from{opacity:0}
+to{opacity:1}
+}
+
+@keyframes slideTop{
+from{opacity:0;transform:translateY(-30px)}
+to{opacity:1;transform:translateY(0)}
+}
+
+@keyframes cardIn{
+from{opacity:0;transform:translateY(30px) scale(0.95)}
+to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+@keyframes popIn{
+from{opacity:0;transform:scale(0.5)}
+to{opacity:1;transform:scale(1)}
+}
+
+@keyframes pulse{
+0%{transform:scale(1)}
+50%{transform:scale(1.4)}
+100%{transform:scale(1.3)}
+}
