@@ -18,7 +18,6 @@
       --muted:#6b7280;
       --border:#d9e2ec;
       --success:#1a9c4b;
-      --danger:#d43f3a;
       --shadow:0 20px 45px rgba(0,0,0,.18);
       --radius:24px;
     }
@@ -442,6 +441,7 @@
       color:var(--muted);
       font-size:12px;
       margin-top:20px;
+      line-height:1.5;
     }
 
     @keyframes fadeBody{
@@ -537,7 +537,6 @@
     <div class="totem">
       <div class="totem-screen">
 
-        <!-- ESTUDIANTE -->
         <section id="student">
           <div id="setup">
             <div class="logo-wrap">
@@ -588,7 +587,7 @@
             </div>
 
             <div class="actions">
-              <button class="btn-primary" onclick="survey.start()">Comenzar encuesta</button>
+              <button type="button" class="btn-primary" id="btnComenzar">Comenzar encuesta</button>
             </div>
           </div>
 
@@ -623,13 +622,12 @@
             </div>
 
             <div class="actions">
-              <button class="btn-secondary" onclick="survey.prev()">Anterior</button>
-              <button class="btn-primary" onclick="survey.next()">Siguiente</button>
+              <button type="button" class="btn-secondary" id="btnAnterior">Anterior</button>
+              <button type="button" class="btn-primary" id="btnSiguiente">Siguiente</button>
             </div>
           </div>
         </section>
 
-        <!-- LOGIN ADMIN -->
         <section id="login" class="hidden">
           <div class="logo-wrap">
             <img src="image.png" alt="Logo universidad" class="logo">
@@ -649,12 +647,11 @@
           </div>
 
           <div class="actions">
-            <button class="btn-primary" onclick="login()">Ingresar</button>
-            <button class="btn-secondary" onclick="volverEncuesta()">Volver a la encuesta</button>
+            <button type="button" class="btn-primary" id="btnLogin">Ingresar</button>
+            <button type="button" class="btn-secondary" id="btnVolverEncuesta">Volver a la encuesta</button>
           </div>
         </section>
 
-        <!-- ADMIN -->
         <section id="admin" class="hidden">
           <div class="logo-wrap">
             <img src="image.png" alt="Logo universidad" class="logo">
@@ -699,11 +696,11 @@
           </div>
 
           <div class="actions">
-            <button class="btn-primary" onclick="aplicarFiltros()">Aplicar filtros</button>
-            <button class="btn-secondary" onclick="resetFiltros()">Limpiar filtros</button>
-            <button class="btn-success" onclick="download()">Descargar CSV</button>
-            <button class="btn-secondary" onclick="window.print()">Imprimir</button>
-            <button class="btn-secondary" onclick="logout()">Salir</button>
+            <button type="button" class="btn-primary" id="btnAplicarFiltros">Aplicar filtros</button>
+            <button type="button" class="btn-secondary" id="btnResetFiltros">Limpiar filtros</button>
+            <button type="button" class="btn-success" id="btnDownload">Descargar CSV</button>
+            <button type="button" class="btn-secondary" id="btnImprimir">Imprimir</button>
+            <button type="button" class="btn-secondary" id="btnLogout">Salir</button>
           </div>
 
           <div class="stats">
@@ -743,22 +740,23 @@
           </div>
         </section>
 
-<div class="footer-totem">
-  Universidad San Sebastián · Sede Bellavista  
-  <br>
-  Creado por Joaquin Gonzalez
-</div>      </div>
+        <div class="footer-totem">
+          Universidad San Sebastián · Sede Bellavista
+          <br>
+          Creado por Joaquin Gonzalez
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
-    const preguntas = const preguntas = [
-  "Limpieza general del baño",
-  "Disponibilidad de insumos higiénicos",
-  "Condiciones de olor y ventilación",
-  "Funcionamiento de equipamiento sanitario",
-  "Condiciones de iluminación"
-];
+    const preguntas = [
+      "Limpieza general del baño",
+      "Disponibilidad de insumos higiénicos",
+      "Condiciones de olor y ventilación",
+      "Funcionamiento de equipamiento sanitario",
+      "Condiciones de iluminación"
+    ];
 
     const emojis = ["😡", "😕", "😐", "🙂", "😍"];
 
@@ -771,9 +769,20 @@
 
     const survey = {
       start() {
-        edificio = document.getElementById("edificio").value;
-        piso = document.getElementById("piso").value;
-        tipo = document.getElementById("tipo").value;
+        const edificioEl = document.getElementById("edificio");
+        const pisoEl = document.getElementById("piso");
+        const tipoEl = document.getElementById("tipo");
+        const setupEl = document.getElementById("setup");
+        const encuestaEl = document.getElementById("encuesta");
+
+        if (!edificioEl || !pisoEl || !tipoEl || !setupEl || !encuestaEl) {
+          alert("Hubo un problema al cargar la encuesta.");
+          return;
+        }
+
+        edificio = edificioEl.value;
+        piso = pisoEl.value;
+        tipo = tipoEl.value;
 
         if (!edificio || !piso || !tipo) {
           alert("Debes completar edificio, piso y tipo de baño.");
@@ -783,8 +792,8 @@
         respuestas = [];
         actual = 0;
 
-        document.getElementById("setup").classList.add("hidden");
-        document.getElementById("encuesta").classList.remove("hidden");
+        setupEl.classList.add("hidden");
+        encuestaEl.classList.remove("hidden");
 
         render();
       },
@@ -814,23 +823,29 @@
     };
 
     function render() {
+      const contadorEl = document.getElementById("contador");
+      const porcentajeEl = document.getElementById("porcentaje");
+      const preguntaEl = document.getElementById("pregunta");
+      const barEl = document.getElementById("bar");
+      const boxEl = document.getElementById("question-box");
+      const contEl = document.getElementById("emojis");
+
       const progressPercent = Math.round(((actual + 1) / preguntas.length) * 100);
 
-      document.getElementById("contador").innerText = `Pregunta ${actual + 1} de ${preguntas.length}`;
-      document.getElementById("porcentaje").innerText = `${progressPercent}%`;
-      document.getElementById("pregunta").innerText = preguntas[actual];
-      document.getElementById("bar").style.width = progressPercent + "%";
+      contadorEl.innerText = `Pregunta ${actual + 1} de ${preguntas.length}`;
+      porcentajeEl.innerText = `${progressPercent}%`;
+      preguntaEl.innerText = preguntas[actual];
+      barEl.style.width = progressPercent + "%";
 
-      const box = document.getElementById("question-box");
-      box.style.animation = "none";
-      void box.offsetWidth;
-      box.style.animation = "questionIn .35s ease";
+      boxEl.style.animation = "none";
+      void boxEl.offsetWidth;
+      boxEl.style.animation = "questionIn .35s ease";
 
-      const cont = document.getElementById("emojis");
-      cont.innerHTML = "";
+      contEl.innerHTML = "";
 
       emojis.forEach((emoji, i) => {
         const b = document.createElement("button");
+        b.type = "button";
         b.className = "emoji";
         b.innerText = emoji;
 
@@ -838,7 +853,7 @@
           b.classList.add("selected");
         }
 
-        b.onclick = () => {
+        b.addEventListener("click", () => {
           respuestas[actual] = i + 1;
 
           document.querySelectorAll(".emoji").forEach(btn => btn.classList.remove("selected"));
@@ -855,9 +870,9 @@
               easing: "ease-out"
             }
           );
-        };
+        });
 
-        cont.appendChild(b);
+        contEl.appendChild(b);
       });
     }
 
@@ -886,10 +901,12 @@
             Tu opinión ayuda a mejorar la experiencia en los baños de la sede Bellavista.
           </p>
           <div class="actions">
-            <button class="btn-primary" onclick="otraEncuesta()">Otra encuesta</button>
+            <button type="button" class="btn-primary" id="btnOtraEncuesta">Otra encuesta</button>
           </div>
         </div>
       `;
+
+      document.getElementById("btnOtraEncuesta").addEventListener("click", otraEncuesta);
     }
 
     function otraEncuesta() {
@@ -1020,7 +1037,7 @@
       chartInstance = new Chart(ctx, {
         type: "bar",
         data: {
-          labels: ["Estado", "Insumos", "Olor", "Funcionamiento", "Iluminación"],
+          labels: ["Limpieza", "Insumos", "Olor", "Funcionamiento", "Iluminación"],
           datasets: [{
             label: "Promedio Likert (1-5)",
             data: promedios,
@@ -1075,6 +1092,19 @@
       link.download = "reporte_banos_uss.csv";
       link.click();
     }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("btnComenzar").addEventListener("click", survey.start);
+      document.getElementById("btnAnterior").addEventListener("click", survey.prev);
+      document.getElementById("btnSiguiente").addEventListener("click", survey.next);
+      document.getElementById("btnLogin").addEventListener("click", login);
+      document.getElementById("btnVolverEncuesta").addEventListener("click", volverEncuesta);
+      document.getElementById("btnAplicarFiltros").addEventListener("click", aplicarFiltros);
+      document.getElementById("btnResetFiltros").addEventListener("click", resetFiltros);
+      document.getElementById("btnDownload").addEventListener("click", download);
+      document.getElementById("btnImprimir").addEventListener("click", () => window.print());
+      document.getElementById("btnLogout").addEventListener("click", logout);
+    });
 
     document.addEventListener("keydown", function(e) {
       if (e.ctrlKey && e.key.toLowerCase() === "j") {
